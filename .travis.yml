@@ -1,0 +1,35 @@
+language: ruby
+obs:
+  include:
+    - stage: test
+      script: ./test 1
+    - # stage name not required, will continue to use `test`
+      script: ./test 2
+    - stage: deploy
+      script: ./deploy
+jobs:
+  include:
+    - script: ./test 1 # uses the default stage name "test"
+    - script: ./test 2
+    - stage: deploy
+      script: ./deploy target-1
+    - script: ./deploy target-2
+rvm:
+  - 2.3
+  - 2.4
+jobs:
+  include:
+    - stage: deploy
+      rvm: 2.4
+      env:
+        - FOO=foo
+      script: ./deploy
+jobs:
+  include:
+    - script: ./test 1 # uses the default stage name "test"
+    - script: ./test 2
+    - stage: deploy
+      script: skip     # usually you do not want to rerun any tests
+      deploy: &heroku
+        provider: heroku
+        # ...
